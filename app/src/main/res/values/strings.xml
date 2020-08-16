@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">Film Tracker</string>
+    <string name="prefs_file">com.javigabe.filmtracker.PREFERENCE.FILE.KEY</string>
+    <string name="log_in_alert">No se ha podido logear</string>
+    <string name="register_alert">El usuario ya esta registrado</string>
+    <string name="google_sign_button">Continuar con Google</string>
+    <string name="register">Registrar</string>
+    <string name="log_in">Iniciar sesion</string>
+    <string name="password">Contraseña</string>
+    <string name="log_out">Cerrar sesion</string>
+    <string name="profile">Perfil</string>
+    <string name="search_hint">Busqueda</string>
+
+</resources>
