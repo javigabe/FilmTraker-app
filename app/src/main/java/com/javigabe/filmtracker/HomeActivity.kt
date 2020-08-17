@@ -95,9 +95,7 @@ class HomeActivity : AppCompatActivity() {
             }
 
             override fun onQueryTextChange(newText: String?): Boolean {
-
                 //Toast.makeText(this@HomeActivity, "Looking for $newText", Toast.LENGTH_LONG).show()
-
                 return false
             }
         })

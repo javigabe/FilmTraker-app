@@ -26,7 +26,7 @@ class AuthActivity : AppCompatActivity() {
 
     private fun checkAlreadyAuthenticated() {
         val prefs = getSharedPreferences(getString(R.string.prefs_file), Context.MODE_PRIVATE)
-        var user = prefs.getString("email", null)
+        val user = prefs.getString("email", null)
         user?.let{
             showHomeLayout()
         } ?: run {
@@ -59,7 +59,7 @@ class AuthActivity : AppCompatActivity() {
                                 showHomeLayout()
                             } else {
                                 Log.e(TAG, getString(R.string.log_in_alert))
-                                showAlert("El login es incorrecto")
+                                showAlert(getString(R.string.log_in_alert))
                             }
                         }
             }
