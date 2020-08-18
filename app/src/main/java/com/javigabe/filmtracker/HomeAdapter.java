@@ -17,17 +17,37 @@ import java.util.ArrayList;
 public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.HomeViewHolder> {
 
     private ArrayList<Film> films;
+    private OnItemClickListener mListener;
+
+    public interface OnItemClickListener {
+        void onItemClick(int position);
+    }
+
+    public void setOnItemClickListener(OnItemClickListener listener) {
+        mListener = listener;
+    }
 
     public static class HomeViewHolder extends RecyclerView.ViewHolder {
         public ImageView poster;
         public TextView filmName;
         public TextView filmGenre;
 
-        public HomeViewHolder(@NonNull View itemView) {
+        public HomeViewHolder(@NonNull View itemView, final OnItemClickListener listener) {
             super(itemView);
             poster = itemView.findViewById(R.id.poster);
-            filmName = itemView.findViewById(R.id.filmName);
-            filmGenre = itemView.findViewById(R.id.filmGenre);
+            filmName = itemView.findViewById(R.id.filmNameItems);
+            filmGenre = itemView.findViewById(R.id.filmGenreItems);
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (listener != null) {
+                        int position = getAdapterPosition();
+                        if (position != RecyclerView.NO_POSITION) {
+                            listener.onItemClick(position);
+                        }
+                    }
+                }
+            });
         }
     }
 
@@ -39,7 +59,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.HomeViewHolder
     @Override
     public HomeViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.items, parent,false);
-        return new HomeViewHolder(view);
+        return new HomeViewHolder(view, mListener);
     }
 
     @Override
@@ -47,7 +67,6 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.HomeViewHolder
         Film film = films.get(position);
 
         if (film.getPoster() != null) {
-            Log.e("ADAPTER", "Entra");
             holder.poster.setImageBitmap(film.getPoster());
         } else {
             holder.poster.setImageResource(R.drawable.movie);

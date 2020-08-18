@@ -17,7 +17,7 @@
             android:padding="2dp"/>
 
         <TextView
-            android:id="@+id/filmName"
+            android:id="@+id/filmNameItems"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
@@ -32,10 +32,10 @@
             android:textStyle="bold" />
 
         <TextView
-            android:id="@+id/filmGenre"
+            android:id="@+id/filmGenreItems"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/filmName"
+            android:layout_below="@+id/filmNameItems"
             android:layout_marginStart="8dp"
             android:layout_marginTop="20dp"
             android:layout_toEndOf="@id/poster"

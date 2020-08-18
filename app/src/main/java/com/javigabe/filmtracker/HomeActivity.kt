@@ -5,11 +5,8 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.StrictMode
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.LinearLayout
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -23,9 +20,8 @@ class HomeActivity : AppCompatActivity() {
 
     private lateinit var filmManager: ImdbController
     private lateinit var mRecyclerView: RecyclerView
-    private lateinit var mAdapter: RecyclerView.Adapter<HomeAdapter.HomeViewHolder>
+    private lateinit var mAdapter: HomeAdapter
     private lateinit var mLayoutManager: RecyclerView.LayoutManager
-
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,10 +35,23 @@ class HomeActivity : AppCompatActivity() {
      fun setUpRecyclerView(films: ArrayList<Film>) {
         mRecyclerView = findViewById(R.id.homeRecyclerView)
         mRecyclerView.setHasFixedSize(true)
+
         mLayoutManager = LinearLayoutManager(this)
         mAdapter = HomeAdapter(films)
         mRecyclerView.setLayoutManager(mLayoutManager)
         mRecyclerView.setAdapter(mAdapter)
+
+         mAdapter.setOnItemClickListener(object : HomeAdapter.OnItemClickListener {
+             override fun onItemClick(position: Int) {
+                 var film = films.get(position)
+                 val intent = Intent(baseContext, FilmActivity::class.java)
+                 intent.putExtra("id", film.id)
+                 intent.putExtra("name", film.name)
+                 intent.putExtra("genre", film.genre)
+                 intent.putExtra("poster", film.poster)
+                 startActivity(intent)
+             }
+         })
     }
 
 
@@ -62,7 +71,11 @@ class HomeActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
-        // DISABLE BACK BUTTON
+        // Get out the app when pressing back in the home view
+        val intent = Intent(Intent.ACTION_MAIN)
+        intent.addCategory(Intent.CATEGORY_HOME)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        startActivity(intent)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {

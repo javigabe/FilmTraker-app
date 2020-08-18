@@ -32,6 +32,8 @@ public class ImdbController extends AsyncTask<String, Void, ArrayList<Film>> {
 
         private HomeActivity homeActivity;
 
+        // No me gusta tener que recibir el home activity como parametro del constructor
+        // TODO: BUSCAR SOLUCION PARA NO TENER QUE RECIBIRLO
         public ImdbController(HomeActivity activity) {
                 this.homeActivity = activity;
         }
@@ -58,7 +60,6 @@ public class ImdbController extends AsyncTask<String, Void, ArrayList<Film>> {
                         try {
                                 Response response = client.newCall(request).execute();
                                 jsonResponse = response.body().string();
-                                Log.e("TAG", jsonResponse);
                         } catch (IOException e) {
                                 e.printStackTrace();
                         }
@@ -101,7 +102,6 @@ public class ImdbController extends AsyncTask<String, Void, ArrayList<Film>> {
 
                 if (imageUrl != null) {
                         try {
-                                Log.e("Image URL", imageUrl);
                                 URL url = new URL(imageUrl);
                                 HttpURLConnection connection = (HttpURLConnection) url.openConnection();
                                 connection.setDoInput(true);
