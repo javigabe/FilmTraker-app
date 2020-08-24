@@ -43,7 +43,7 @@ class HomeActivity : AppCompatActivity() {
 
          mAdapter.setOnItemClickListener(object : HomeAdapter.OnItemClickListener {
              override fun onItemClick(position: Int) {
-                 var film = films.get(position)
+                 val film = films.get(position)
                  val intent = Intent(baseContext, FilmActivity::class.java)
                  intent.putExtra("id", film.id)
                  intent.putExtra("name", film.name)

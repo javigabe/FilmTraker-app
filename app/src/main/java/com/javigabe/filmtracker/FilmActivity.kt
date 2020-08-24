@@ -2,7 +2,6 @@ package com.javigabe.filmtracker
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import com.javigabe.filmtracker.resources.Film
 import kotlinx.android.synthetic.main.activity_film.*
 
 class FilmActivity : AppCompatActivity() {
