@@ -14,6 +14,10 @@ class FilmActivity : AppCompatActivity() {
         val imdbController = ImdbController(this)
         imdbController.execute(id, "id")
 
-        filmNameFilm.setText(name)
+        //filmNameFilm.setText(name)
+    }
+
+    fun setName(name: String) {
+        filmNameFilm.text = name
     }
 }
