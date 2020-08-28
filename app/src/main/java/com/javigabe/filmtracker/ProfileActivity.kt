@@ -12,7 +12,7 @@ class ProfileActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_profile)
         title = getString(R.string.profile)
-        profileEmailText.setText(FirebaseAuth.getInstance().currentUser?.email)
+        profileEmailText.text = FirebaseAuth.getInstance().currentUser.email
     }
 
     override fun onBackPressed() {

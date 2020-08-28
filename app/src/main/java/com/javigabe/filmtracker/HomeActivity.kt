@@ -46,9 +46,6 @@ class HomeActivity : AppCompatActivity() {
                  val film = films.get(position)
                  val intent = Intent(baseContext, FilmActivity::class.java)
                  intent.putExtra("id", film.id)
-                 intent.putExtra("name", film.name)
-                 intent.putExtra("genre", film.genre)
-                 intent.putExtra("poster", film.poster)
                  startActivity(intent)
              }
          })
@@ -101,14 +98,12 @@ class HomeActivity : AppCompatActivity() {
                 // If multiple consecutive fast searches are done, only take last one
                 filmManager.cancel(true)
                 filmManager = ImdbController(this@HomeActivity)
-                filmManager.execute(query)
+                filmManager.execute(query, "title")
 
-                //Toast.makeText(this@HomeActivity, "Looking for $query", Toast.LENGTH_LONG).show()
                 return true
             }
 
             override fun onQueryTextChange(newText: String?): Boolean {
-                //Toast.makeText(this@HomeActivity, "Looking for $newText", Toast.LENGTH_LONG).show()
                 return false
             }
         })

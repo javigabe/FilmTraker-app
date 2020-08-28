@@ -2,6 +2,7 @@ package com.javigabe.filmtracker
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import com.javigabe.filmtracker.resources.ImdbController
 import kotlinx.android.synthetic.main.activity_film.*
 
 class FilmActivity : AppCompatActivity() {
@@ -9,9 +10,9 @@ class FilmActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_film)
         val id = intent.getStringExtra("id")
-        val name = intent.getStringExtra("name")
-        val genre = intent.getStringExtra("genre")
-        //val poster = intent.getByteArrayExtra("poster")
+
+        val imdbController = ImdbController(this)
+        imdbController.execute(id, "id")
 
         filmNameFilm.setText(name)
     }

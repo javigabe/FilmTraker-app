@@ -8,6 +8,8 @@ import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.javigabe.filmtracker.HomeActivity;
 
 import com.squareup.okhttp.OkHttpClient;
@@ -30,17 +32,24 @@ public class ImdbController extends AsyncTask<String, Void, ArrayList<Film>> {
         private static final String KEY = "88e3cbc73cmsh68e7f56d3d95047p164a5djsn5da5c146a19c";
         private static final String HOST = "imdb8.p.rapidapi.com";
 
-        private HomeActivity homeActivity;
+        private AppCompatActivity homeActivity;
 
         // No me gusta tener que recibir el home activity como parametro del constructor
         // TODO: BUSCAR SOLUCION PARA NO TENER QUE RECIBIRLO
-        public ImdbController(HomeActivity activity) {
+        public ImdbController(AppCompatActivity activity) {
                 this.homeActivity = activity;
         }
 
+        public ImdbController() {}
+
         @Override
         protected ArrayList<Film> doInBackground(String... title) {
-                return searchImagebyTitle(title[0]);
+                if (title[1].equals("title")) {
+                        return searchImagebyTitle(title[0]);
+                } else if (title[1].equals("id")) {
+                        // search film by its id
+                }
+                return null;
         }
 
 
