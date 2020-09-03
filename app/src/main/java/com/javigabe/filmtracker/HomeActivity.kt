@@ -31,6 +31,11 @@ class HomeActivity : AppCompatActivity() {
         filmManager = ImdbController(this@HomeActivity)
     }
 
+    override fun onStart() {
+        super.onStart()
+        setContentView(R.layout.activity_home)
+    }
+
 
      fun setUpRecyclerView(films: ArrayList<Film>) {
         mRecyclerView = findViewById(R.id.homeRecyclerView)
@@ -76,8 +81,8 @@ class HomeActivity : AppCompatActivity() {
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        val policy = StrictMode.ThreadPolicy.Builder().permitAll().build()
-        StrictMode.setThreadPolicy(policy)
+        //val policy = StrictMode.ThreadPolicy.Builder().permitAll().build()
+        //StrictMode.setThreadPolicy(policy)
 
         val inflater = menuInflater
         inflater.inflate(R.menu.main_menu, menu)
@@ -122,6 +127,11 @@ class HomeActivity : AppCompatActivity() {
             }
             R.id.profileButton -> {
                 val intent = Intent(this, ProfileActivity::class.java)
+                startActivity(intent)
+                true
+            }
+            R.id.ratingsButton -> {
+                val intent = Intent(this, RatingsActivity::class.java)
                 startActivity(intent)
                 true
             }

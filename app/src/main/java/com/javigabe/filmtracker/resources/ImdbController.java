@@ -27,11 +27,12 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 
 public class ImdbController extends AsyncTask<String, Void, ArrayList<Film>> {
-        private static final String KEY = "88e3cbc73cmsh68e7f56d3d95047p164a5djsn5da5c146a19c";
-        private static final String HOST = "imdb8.p.rapidapi.com";
+        private static final String KEY = "c6b297a2343bd15b8f36043773dfd35a";
+        private HashMap<Long, String> genres;
 
         private AppCompatActivity activity;
 
@@ -39,109 +40,21 @@ public class ImdbController extends AsyncTask<String, Void, ArrayList<Film>> {
         // TODO: BUSCAR SOLUCION PARA NO TENER QUE RECIBIRLO
         public ImdbController(AppCompatActivity activity) {
                 this.activity = activity;
+                genres = new HashMap<>();
+                setUpGenres();
         }
 
-        public ImdbController() {}
 
         @Override
         protected ArrayList<Film> doInBackground(String... title) {
                 if (title[1].equals("title")) {
-                        return searchImagebyTitle(title[0]);
+                        return searchFilmbyTitle(title[0]);
                 } else if (title[1].equals("id")) {
-                        // search film by its id
+                        return searchFilmbyId(title[0]);
                 }
                 return null;
         }
 
-
-        private ArrayList<Film> searchImagebyTitle(String title) {
-                if (!isCancelled() && !title.isEmpty()) {
-                        String query = "https://imdb8.p.rapidapi.com/title/auto-complete?q=" + title;
-                        OkHttpClient client = new OkHttpClient();
-
-                        Request request = new Request.Builder()
-                                .url(query)
-                                .get()
-                                .addHeader("x-rapidapi-host", HOST)
-                                .addHeader("x-rapidapi-key", KEY)
-                                .build();
-
-                        String jsonResponse = null;
-                        try {
-                                Response response = client.newCall(request).execute();
-                                jsonResponse = response.body().string();
-                        } catch (IOException e) {
-                                e.printStackTrace();
-                        }
-                        return parseJsontoFilms(jsonResponse);
-                }
-              return null;
-        }
-
-        private ArrayList<Film> parseJsontoFilms(String jsonResponse) {
-                JSONParser jsonParser = new JSONParser();
-                ArrayList<Film> filmsArray = new ArrayList<>();
-
-                try {
-                        JSONObject jsonFilms = (JSONObject) jsonParser.parse(jsonResponse);
-                        JSONArray films = (JSONArray) jsonFilms.get("d");
-                        if (films == null) return null;
-
-                        for (Object filmObj : films) {
-                                JSONObject jsonFilm = (JSONObject) filmObj;
-
-                                String id = (String) jsonFilm.get("id");
-                                String name = (String) jsonFilm.get("l");
-                                String genre = (String) jsonFilm.get("q");
-
-                                JSONObject image = (JSONObject) jsonFilm.get("i");
-                                String imageUrl = (String) (image != null ? image.get("imageUrl") : null);
-                                Bitmap resizedBitmap = resizeImage(imageUrl);
-
-                                Film film = new Film(id, name, genre, resizedBitmap);
-                                filmsArray.add(film);
-                        }
-                } catch (ParseException e) {
-                        e.printStackTrace();
-                }
-                return filmsArray;
-        }
-
-        private Bitmap resizeImage(String imageUrl) {
-                Bitmap resizedBitmap;
-
-                if (imageUrl != null) {
-                        try {
-                                URL url = new URL(imageUrl);
-                                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-                                connection.setDoInput(true);
-                                connection.connect();
-                                InputStream input = connection.getInputStream();
-                                Bitmap myBitmap = BitmapFactory.decodeStream(input);
-
-                                // DIMENSIONS OF R.ID.POSTER
-                                int desiredWidth = 100;
-                                int desiredHeight = 130;
-
-                                int width = myBitmap.getWidth();
-                                int height = myBitmap.getHeight();
-                                float scaleWidth = ((float) desiredWidth) / width;
-                                float scaleHeight = ((float) desiredHeight) / height;
-                                // CREATE A MATRIX FOR THE MANIPULATION
-                                Matrix matrix = new Matrix();
-                                // RESIZE THE BIT MAP
-                                matrix.postScale(scaleWidth, scaleHeight);
-
-                                // "RECREATE" THE NEW BITMAP
-                                resizedBitmap = Bitmap.createBitmap(myBitmap, 0, 0, width, height,
-                                        matrix, false);
-                                return resizedBitmap;
-                        } catch (IOException e) {
-                                e.printStackTrace();
-                        }
-                }
-                return null;
-        }
 
         @Override
         protected void onProgressUpdate(Void... values) {
@@ -156,9 +69,173 @@ public class ImdbController extends AsyncTask<String, Void, ArrayList<Film>> {
                                 homeActivity.setUpRecyclerView(films);
                         } else if (activity instanceof FilmActivity) {
                                 FilmActivity filmActivity = (FilmActivity) activity;
-                                filmActivity.setName(films.get(0).getName());
+                                filmActivity.setView(films.get(0));
                         }
                 }
                 super.onPostExecute(films);
+        }
+
+
+        private ArrayList<Film> searchFilmbyId(String id) {
+                if (!isCancelled()) {
+                        String query = "https://api.themoviedb.org/3/movie/" + id + "?api_key=" + KEY;
+                        OkHttpClient client = new OkHttpClient();
+
+                        Request request = new Request.Builder()
+                                .url(query)
+                                .get()
+                                .build();
+
+                        String jsonResponse = null;
+                        try {
+                                Response response = client.newCall(request).execute();
+                                jsonResponse = response.body().string();
+                        } catch (IOException e) {
+                                e.printStackTrace();
+                        }
+                        return parseJsontoFilm(jsonResponse);
+                }
+                return null;
+        }
+
+
+        private ArrayList<Film> searchFilmbyTitle(String title) {
+                if (!isCancelled() && !title.isEmpty()) {
+                        String query = "https://api.themoviedb.org/3/search/movie?api_key=" + KEY + "&query=" + title;
+                        OkHttpClient client = new OkHttpClient();
+
+                        Request request = new Request.Builder()
+                                .url(query)
+                                .get()
+                                .build();
+
+                        String jsonResponse = null;
+                        try {
+                                Response response = client.newCall(request).execute();
+                                jsonResponse = response.body().string();
+                        } catch (IOException e) {
+                                e.printStackTrace();
+                        }
+                        return parseJsontoFilms(jsonResponse);
+                }
+                return null;
+        }
+
+        private ArrayList<Film> parseJsontoFilm(String jsonResponse) {
+                JSONParser jsonParser = new JSONParser();
+                ArrayList<Film> filmArray = new ArrayList<>();
+
+                try {
+                        JSONObject jsonFilm = (JSONObject) jsonParser.parse(jsonResponse);
+                        String id = jsonFilm.get("id").toString();
+                        String name = (String) jsonFilm.get("title");
+                        String sinopsis = (String) jsonFilm.get("overview");
+                        JSONArray genres = (JSONArray) jsonFilm.get("genres");
+                        String imageUrl = (String) jsonFilm.get("poster_path");
+                        Bitmap image = getImage(imageUrl);
+
+                        String mainGenre = null;
+
+                        if (genres != null && genres.size() > 0) {
+                                JSONObject genreObject = (JSONObject) genres.get(0);
+                                mainGenre = (String) genreObject.get("name");
+                        }
+
+                        // TODO cambiar el null por la imagen de la pelicula
+                        Film film = new Film(id,name, mainGenre, image, sinopsis);
+                        filmArray.add(film);
+                } catch (ParseException e) {
+                        e.printStackTrace();
+                }
+                return filmArray;
+        }
+
+        private ArrayList<Film> parseJsontoFilms(String jsonResponse) {
+                JSONParser jsonParser = new JSONParser();
+                ArrayList<Film> filmsArray = new ArrayList<>();
+
+                try {
+                        JSONObject jsonFilms = (JSONObject) jsonParser.parse(jsonResponse);
+                        JSONArray films = (JSONArray) jsonFilms.get("results");
+                        if (films == null) return null;
+
+                        for (Object filmObj : films) {
+                                JSONObject jsonFilm = (JSONObject) filmObj;
+
+                                String id = jsonFilm.get("id").toString();
+                                String name = (String) jsonFilm.get("title");
+                                JSONArray filmGenres = (JSONArray) jsonFilm.get("genre_ids");
+                                Long genreId = (Long) (filmGenres != null && filmGenres.size() > 0 ? filmGenres.get(0) : (long) 0);
+                                String mainGenre = genres.get(genreId);
+
+                                //JSONObject image = (JSONObject) jsonFilm.get("i");
+                                String imageUrl = (String) jsonFilm.get("poster_path");
+                                Bitmap image = getImage(imageUrl);
+
+                                // TODO cambiar el null por la imagen de la pelicula
+                                Film film = new Film(id, name, mainGenre, image);
+                                filmsArray.add(film);
+                        }
+                } catch (ParseException e) {
+                        e.printStackTrace();
+                }
+                return filmsArray;
+        }
+
+        public Bitmap resizeImage(Bitmap myBitmap, int desiredWidth, int desiredHeight) {
+                Bitmap resizedBitmap;
+
+                int width = myBitmap.getWidth();
+                int height = myBitmap.getHeight();
+                float scaleWidth = ((float) desiredWidth) / width;
+                float scaleHeight = ((float) desiredHeight) / height;
+                // CREATE A MATRIX FOR THE MANIPULATION
+                Matrix matrix = new Matrix();
+                // RESIZE THE BIT MAP
+                matrix.postScale(scaleWidth, scaleHeight);
+
+                // "RECREATE" THE NEW BITMAP
+                resizedBitmap = Bitmap.createBitmap(myBitmap, 0, 0, width, height,
+                        matrix, false);
+                return resizedBitmap;
+        }
+
+        private Bitmap getImage(String imageUrl) {
+                if (imageUrl != null) {
+                        String fullUrl = "https://image.tmdb.org/t/p/w500" + imageUrl;
+                        try {
+                                URL url = new URL(fullUrl);
+                                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                                connection.setDoInput(true);
+                                connection.connect();
+                                InputStream input = connection.getInputStream();
+                                return BitmapFactory.decodeStream(input);
+                        } catch (IOException e) {
+                                e.printStackTrace();
+                        }
+                }
+                return null;
+        }
+
+        private void setUpGenres() {
+                genres.put((long) 28, "Action");
+                genres.put((long) 12, "Adventure");
+                genres.put((long) 16, "Animation");
+                genres.put((long) 35, "Comedy");
+                genres.put((long) 80, "Crime");
+                genres.put((long) 99, "Documentary");
+                genres.put((long) 18, "Drama");
+                genres.put((long) 10751, "Family");
+                genres.put((long) 14, "Fantasy");
+                genres.put((long) 36, "History");
+                genres.put((long) 27, "Horror");
+                genres.put((long) 10402, "Music");
+                genres.put((long) 9648, "Mystery");
+                genres.put((long) 10749, "Romance");
+                genres.put((long) 878, "Science Fiction");
+                genres.put((long) 10770, "TV Movie");
+                genres.put((long) 53, "Thriller");
+                genres.put((long) 10752, "War");
+                genres.put((long) 37, "Western");
         }
 }

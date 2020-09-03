@@ -17,6 +17,12 @@
         app:showAsAction="never" />
 
     <item
+        android:id="@+id/ratingsButton"
+        android:title="@string/ratings"
+        app:actionViewClass="androidx.appcompat.widget.SearchView"
+        app:showAsAction="never" />
+
+    <item
         android:id="@+id/logOutButton"
         android:title="@string/log_out"
         app:actionViewClass="androidx.appcompat.widget.SearchView"

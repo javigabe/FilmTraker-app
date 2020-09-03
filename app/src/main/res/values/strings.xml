@@ -10,5 +10,7 @@
     <string name="log_out">Cerrar sesion</string>
     <string name="profile">Perfil</string>
     <string name="search_hint">Busqueda</string>
+    <string name="ratings">Valoraciones</string>
+
 
 </resources>
